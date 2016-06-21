@@ -22,10 +22,12 @@ def hosts():
 
 # Fabric function that tests if "agent-switch" directory exists
 def test():
-	with settings(warn_only=True):
-        	result = sudo('rm -f /local/mnt/hyperic/agent-old-SD-agent_TO_BE_DELETED.tgz', capture=True)
-    	if result.failed and not confirm("DELETE failed. Continue anyway?"):
-        	abort("Aborting at user request.")
+        with settings(warn_only=True):
+                p = run('ls -l /local/mnt/hyperic/agent-switch')
+                if p.failed and not confirm("Lookup failed. Continue anyway?"):
+                        abort("Aborting at user request.")
+                elif p.return_code == 0:
+                        print "SUCCESS.IT LIVES!!!"
 
 # name the function here in order to execute it 
 def task():
