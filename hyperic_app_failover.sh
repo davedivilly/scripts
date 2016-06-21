@@ -41,7 +41,7 @@ do
                 exit 0
 
         else
-                echo "Hyperic App failover has been triggered. If mail is received more than 3 times, check hq_server.conf and notify PostGres DBA." | mail -s "HypericApp failover triggered on `hostname`" ddivilly@qualcomm.com lbujas@qualcomm.com mwss.web.team@qualcomm.com
+                echo "Hyperic App failover has been triggered. If mail is received more than 3 times, check hq_server.conf and notify PostGres DBA." | mail -s "HypericApp failover triggered on `hostname`" xxxxxx@qualcomm.com
                 sleep 15
         fi
 
@@ -73,6 +73,6 @@ sleep 30
 sudo -u hyperic cp /local/mnt/hyperic/server-5.8.1-EE/conf/hq-server.conf.DO.NOT.DELETE.slave /local/mnt/hyperic/server-5.8.1-EE/conf/hq-server.conf
 sudo -u hyperic /local/mnt/hyperic/server-5.8.1-EE/bin/hq-server.sh start
 
-echo "Hyperic slave conf file is now main configuration file after failover event. Consult with PostGres DBA on manual fail-back for Master/Slave config. ### Re-enable CRONJOB (/etc/cron.d/hyperic_cron) as part of manual fail-back ###"  | mail -s Hyperic_App_Failover_Event  ddivilly@qualcomm.com lbujas@qualcomm.com mwss.web.team@qualcomm.com
+echo "Hyperic slave conf file is now main configuration file after failover event. Consult with PostGres DBA on manual fail-back for Master/Slave config. ### Re-enable CRONJOB (/etc/cron.d/hyperic_cron) as part of manual fail-back ###"  | mail -s Hyperic_App_Failover_Event  xxxxxx@qualcomm.com
 
 exit 0
