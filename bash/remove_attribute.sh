@@ -6,6 +6,8 @@ echo -e "----------------------------------------------"
 echo -e "Removing Attribute "xxxxx" in  XML tag in file"
 echo -e "-----------------------------------------------"
 
+# Replace *"Resource id"* , *"Role id"* & *"resourceId"*"id"* with required string for line.
+
 sleep 3
 
  while read line; do
