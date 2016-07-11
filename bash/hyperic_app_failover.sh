@@ -1,10 +1,8 @@
 #!/bin/bash
 
 #############################################################################################################################################
-# Checks Hyperic App health and fails-over Hyperic App Server config to Slave config in the event of Primary DB failure                     #
+# Checks Hyperic DB health and fails-over Hyperic App Server config to Slave DB in the event of Primary DB failure                          #
 # This script will run as a CRONJOB on Hyperic App Servers, using a file created in /etc/cron.d/hyperic_cron                                #
-#                                                                                                                                           #                                                                                  #
-# Date 22th July 2015                                                                                                                       #      #
 #############################################################################################################################################
 
 ############################
@@ -12,14 +10,14 @@
 ############################
 
 host=`hostname`
-if [ "webmon01" = $host ] || [ "webmon02" = $host ]
+if [ "webmon05" = $host ] || [ "webmon06" = $host ]
 then
 
-db_backend=dbpghypprd01
+db_backend=dbpghypprd05
 
 else
 
-db_backend=dbpghypprd03
+db_backend=dbpghypprd06
 
 fi
 
@@ -33,7 +31,7 @@ i=1 # counter that repeats test condition 3 times, to confirm DB is definitely u
 while [ $i -le 3 ]
 do
 
-        sudo -u hyperic /local/mnt/postgres/bin/psql -x -d HQ -h $db_backend -p 5438 -U appadmin -c "SELECT 1 as success" -o /usr2/hyperic/Hyperic_App_Health_$host.txt 2>/dev/null
+        sudo -u hyperic /usr/bin/psql -x -d HQ -h $db_backend -p 5437 -U appadmin -c "SELECT 1 as success" -o /usr2/hyperic/Hyperic_App_Health_$host.txt 2>/dev/null
 
         if [ 1 -eq `grep -c success /usr2/hyperic/Hyperic_App_Health_$host.txt` ]; then
 
@@ -41,7 +39,7 @@ do
                 exit 0
 
         else
-                echo "Hyperic App failover has been triggered. If mail is received more than 3 times, check hq_server.conf and notify PostGres DBA." | mail -s "HypericApp failover triggered on `hostname`" xxxxxx@qualcomm.com
+                echo "Hyperic App failover has been triggered. If mail is received more than 3 times, check hq_server.conf and notify PostGres DBA." | mail -s "HypericApp failover triggered on `hostname`" ddivilly@qualcomm.com
                 sleep 15
         fi
 
@@ -62,17 +60,17 @@ fi
 #################################################################################
 # Stop Hyperic and CRONJOB swap Hyperic CONF files from Master to Slave         #
 #                                                                               #
-# Cron Entry: */5 * * * * root bash /usr2/hyperic/hyperic_app_failover_final.sh #
+# Cron Entry: */5 * * * * root bash /usr2/hyperic/hyperic_failover_nonprod.sh   #
 #################################################################################
 
 sed -i 's/^/#/' /etc/cron.d/hyperic_cron  # Stops Cronjob looping after failover #
-sudo -u hyperic /local/mnt/hyperic/server-5.8.1-EE/bin/hq-server.sh stop
+sudo -u hyperic /local/mnt/hyperic-nonprod/server-5.8.4-EE/bin/hq-server.sh stop
 
 sleep 30
 
-sudo -u hyperic cp /local/mnt/hyperic/server-5.8.1-EE/conf/hq-server.conf.DO.NOT.DELETE.slave /local/mnt/hyperic/server-5.8.1-EE/conf/hq-server.conf
-sudo -u hyperic /local/mnt/hyperic/server-5.8.1-EE/bin/hq-server.sh start
+sudo -u hyperic cp /local/mnt/hyperic-nonprod/server-5.8.4-EE/conf/hq-server.conf.DO.NOT.DELETE.SLAVE /local/mnt/hyperic-nonprod/server-5.8.4-EE/conf/hq-server.conf
+sudo -u hyperic /local/mnt/hyperic-nonprod/server-5.8.4-EE/bin/hq-server.sh start
 
-echo "Hyperic slave conf file is now main configuration file after failover event. Consult with PostGres DBA on manual fail-back for Master/Slave config. ### Re-enable CRONJOB (/etc/cron.d/hyperic_cron) as part of manual fail-back ###"  | mail -s Hyperic_App_Failover_Event  xxxxxx@qualcomm.com
+echo "SLAVE(dbpghypprd06)PostGres DB is now the PRIMARY DB after failover event. Consult with PostGres DBA on manual fail-back to dbpghypprd05(PRIMARY). ### Re-enable CRONJOB (/etc/cron.d/hyperic_cron) as part of manual fail-back ###"  | mail -s Hyperic_App_Failover_Event  ddivilly@qualcomm.com lbujas@qualcomm.com mwss.web.team@qualcomm.com
 
 exit 0
