@@ -4,9 +4,9 @@ import os
 import sys
 from fabric.api import * 
 
-print "----------------------------------------------------------------------"
-print "To use this script type: fab -f dmz-hyperic-agent.py hosts agent_setup"
-print "----------------------------------------------------------------------"
+print "---------------------------------------------------------"
+print "To use this script type: fab -f dmz-hyperic-agent.py task"
+print "---------------------------------------------------------"
 
 # used to prevent annoying errors when default is used "/bin/bash -l -c"
 env.shell = "/bin/bash -c"
@@ -30,3 +30,6 @@ def agent_setup():
              print "Hyperic-lv Non-Prod Agent has been setup "
              print "-----------------------------------------"
 	
+def task():
+	execute(hosts)
+	execute(agent_setup)
