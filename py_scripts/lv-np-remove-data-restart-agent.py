@@ -7,9 +7,9 @@ from fabric.api import *
 # Get lisy of hosts into a txt file
 #os.system("mdb admin_contact=corp.web.admin office_location=LAS.COLO2 return alias | grep alias | awk -F' ' '{print$2}' | sort | grep -v prd | grep -v x |grep switch  > ~/SCRIPTS/PYTHON/remove_restart.txt")
 
-print "----------------------------------------------------------------------------------------------------------"
-print "To use this script type: fab -f lv-np-remove-data-restart-agent.py -p <YourQUALPASS> hosts remove_restart"
-print "----------------------------------------------------------------------------------------------------------"
+print "-----------------------------------------------------------------------"
+print "To use this script type: fab -f lv-np-remove-data-restart-agent.py task"
+print "-----------------------------------------------------------------------"
 
 # used to prevent annoying errors when default is used "/bin/bash -l -c"
 env.shell = "/bin/bash -c"
@@ -26,4 +26,8 @@ def remove_restart():
 	print "-----------------------------------"
         print "Data DIR removed & Agent restarted "
         print "-----------------------------------"
+        
+def task():
+	execute(hosts)
+	execute(remove_restart)
 	
