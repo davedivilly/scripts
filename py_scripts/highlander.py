@@ -106,6 +106,12 @@ def test_3():
                         print "Deleting any unecessary Agent directories in /local/mnt/hyperic/: \n", d
                         print "------------------------------------------------------------------"
                         sudo('find /local/mnt/hyperic/* -maxdepth 0 -type d ! -name "agent-switch" -exec rm -rf {} \;',quiet=True)
+                        print "\n"
+                        print "Restarting currently installed Agent .."
+                        print "\n"
+                        sudo('/local/mnt/hyperic/agent-switch/bin/hq-agent.sh stop',quiet=True)
+                        sudo('rm -rf /local/mnt/hyperic/agent-switch/data',quiet=True)
+                        sudo('/local/mnt/hyperic/agent-switch/bin/hq-agent.sh start',quiet=True)
 # call the function(sub-task)here in order to execute it
 def task():
     execute(hosts)
