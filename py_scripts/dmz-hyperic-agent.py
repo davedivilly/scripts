@@ -26,9 +26,9 @@ def agent_setup():
 	     sudo('sed -i -e s/agent.setup.unidirectional=no/agent.setup.unidirectional=yes/g /local/mnt/hyperic/agent-switch/conf/agent.properties')
       	     sudo('/local/mnt/hyperic/agent-switch/bin/hq-agent.sh start')
 	     sudo('rm -rf /local/mnt/workspace/agent-switch')
-	     print "-----------------------------------------"
-             print "Hyperic-lv Non-Prod Agent has been setup "
-             print "-----------------------------------------"
+	     print "----------------------------------------------"
+             print "Hyperic-lv Non-Prod Agent has been setup on : ", env.host_string
+             print "----------------------------------------------"
 	
 def task():
 	execute(hosts)
