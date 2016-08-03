@@ -44,6 +44,12 @@ def test_1():
                         print "\n"
                         time.sleep(3)
                         sudo('find /local/mnt/hyperic/* -maxdepth 0 -type d ! -name "agent-switch" -exec rm -rf {} \;',quiet=True)
+                        print "\n"
+                        print "Restarting currently installed Agent .."
+                        print "\n"
+                        sudo('/local/mnt/hyperic/agent-switch/bin/hq-agent.sh stop',quiet=True)
+                        sudo('rm -rf /local/mnt/hyperic/agent-switch/data',quiet=True)
+                        sudo('/local/mnt/hyperic/agent-switch/bin/hq-agent.sh start',quiet=True)
                 elif int(a) >= 3 and int(b) <= 2 :
                         execute(test_2)
                 elif int(a) >= 3 and int(b) >= 3:
@@ -64,6 +70,12 @@ def test_2():
                         print "------------------------------------------------------------------"
                         time.sleep(3)
                         sudo('find /local/mnt/hyperic/* -maxdepth 0 -type d ! -name "agent" -exec rm -rf {} \;',quiet=True)
+                        print "\n"
+                        print "Restarting currently installed Agent .."
+                        print "\n"
+                        sudo('/local/mnt/hyperic/agent/bin/hq-agent.sh stop',quiet=True)
+                        sudo('rm -rf /local/mnt/hyperic/agent/data',quiet=True)
+                        sudo('/local/mnt/hyperic/agent/bin/hq-agent.sh start',quiet=True)
 def test_3():
         with settings(warn_only=True):
                 a = run('ps -ef | grep -c "hyperic/agent/"',quiet=True)
