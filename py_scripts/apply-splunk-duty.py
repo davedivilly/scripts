@@ -4,11 +4,11 @@ import os
 import sys
 from fabric.api import * 
 
-print "---------------------------------------------------------------------"
-print "To use this script type: fab -f apply-splunk-duty.py hosts splunk ---" 
-print "---------------------------------------------------------------------"
+print "--------------------------------------------------------------"
+print "To use this script type: fab -f apply-splunk-duty.py task ----" 
+print "--------------------------------------------------------------"
 
-# used to prevent annoying errors when default is used "/bin/bash -l -c"
+# used to prevent warning errors when default is used "/bin/bash -l -c"
 env.shell = "/bin/bash -c"
 
 # fabric functon that reads host txt file
@@ -21,4 +21,6 @@ def splunk():
     print "-----------------------------------------"
     print " Splunk duty has been added to host ---- "
     print "-----------------------------------------"
-	
+def task():
+	execute(hosts)
+	execute(splunk)
