@@ -7,9 +7,9 @@ from fabric.api import *
 # Get lisy of hosts into a txt file
 #os.system("mdb admin_contact=corp.web.admin office_location=LAS.COLO2 return alias | grep alias | awk -F' ' '{print$2}' | sort | grep -v prd | grep -v x  > ~/tmp/non-prd-internal.txt")
 
-print "----------------------------------------------------------------------------------------------"
-print "To use this script type: fab -f which-hyperic.py -p <YourQUALPASS> hosts hyperic_check"
-print "----------------------------------------------------------------------------------------------"
+print "-----------------------------------------------------"
+print "To use this script type: fab -f which-hyperic.py task
+print "-----------------------------------------------------"
 
 # used to prevent annoying errors when default is used "/bin/bash -l -c"
 env.shell = "/bin/bash -c"
@@ -18,7 +18,10 @@ env.shell = "/bin/bash -c"
 def hosts():
     env.hosts = open('/usr2/ddivilly/tmp/non-prd-internal.txt', 'r').readlines()
 
-# Fabric function that setups hyperic-lv non-prod agent
+# Fabric function that checks hyperic agent properties for correct system
 def hyperic_check():
 	sudo('cat /local/mnt/hyperic/agent/conf/agent.properties | grep agent.setup.camIP')
 	
+def task():
+	execute(hosts)
+	execute(hyperic_check)
