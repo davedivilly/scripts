@@ -25,7 +25,7 @@ env.skip_bad_hosts = True
 
 # fabric functon that reads host txt file
 def hosts():
-    env.hosts = open('/usr2/ddivilly/SCRIPTS/PYTHON/agent-cleanup/internal_np_linux.txt','r').readlines()
+    env.hosts = open('/usr2/ddivilly/SCRIPTS/PYTHON/agent-cleanup/sd2n.txt','r').readlines()
 
 # Fabric function that tests if 2 agents exists on a host and cleans up unnecessary directories #
 def test_1():
@@ -54,6 +54,8 @@ def test_1():
                         execute(test_2)
                 elif int(a) >= 3 and int(b) >= 3:
                         execute(test_3)
+                elif int(a) <= 2 and int(b) <= 2 and not confirm("No Agent installed. Continue anyway?"):
+                        abort("Aborting at user request.")
 def test_2():
         with settings(warn_only=True):
                 a = run('ps -ef | grep -c "hyperic/agent/"',quiet=True)
@@ -104,9 +106,6 @@ def test_3():
                         print "Deleting any unecessary Agent directories in /local/mnt/hyperic/: \n", d
                         print "------------------------------------------------------------------"
                         sudo('find /local/mnt/hyperic/* -maxdepth 0 -type d ! -name "agent-switch" -exec rm -rf {} \;',quiet=True)
-                elif int(a) <= 2 and int(b) <= 2 and not confirm("No Agent installed. Continue anyway?"):
-                        abort("Aborting at user request.")
-
 # call the function(sub-task)here in order to execute it
 def task():
     execute(hosts)
