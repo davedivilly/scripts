@@ -25,10 +25,10 @@ env.skip_bad_hosts = True
 
 # fabric functon that reads host txt file
 def hosts():
-    env.hosts = open('/usr2/ddivilly/SCRIPTS/PYTHON/agent-cleanup/test.txt','r').readlines()
+    env.hosts = open('/usr2/ddivilly/SCRIPTS/PYTHON/agent-cleanup/internal_np_linux.txt','r').readlines()
 
 # Fabric function that tests if 2 agents exists on a host and cleans up unnecessary directories #
-def test():
+def test_1():
         with settings(warn_only=True):
                 a = run('ps -ef | grep -c "hyperic/agent/"',quiet=True)
                 b = run('ps -ef | grep -c "hyperic/agent-switch/"',quiet=True)
@@ -37,28 +37,38 @@ def test():
                         print "Success. Only one agent installed on:",env.host_string,": agent-switch"
                         print "----------------------------------------------------------------------"
                         print "\n"
-                        d = run('ls -l /local/mnt/hyperic/ | grep -v agent-switch$',quiet=True)
+                        d = run("ls -al /local/mnt/hyperic/ | grep -v agent-switch$ | awk -F' ' '{print$9}'",quiet=True)
                         print "------------------------------------------------------------------"
                         print "Deleting any unecessary Agent directories in /local/mnt/hyperic/ : \n", d
                         print "------------------------------------------------------------------"
                         print "\n"
                         time.sleep(3)
                         sudo('find /local/mnt/hyperic/* -maxdepth 0 -type d ! -name "agent-switch" -exec rm -rf {} \;',quiet=True)
-                        sys.exit(0)
                 elif int(a) >= 3 and int(b) <= 2 :
+                        execute(test_2)
+                elif int(a) >= 3 and int(b) >= 3:
+                        execute(test_3)
+def test_2():
+        with settings(warn_only=True):
+                a = run('ps -ef | grep -c "hyperic/agent/"',quiet=True)
+                b = run('ps -ef | grep -c "hyperic/agent-switch/"',quiet=True)
+                if int(a) >= 3 and int(b) <= 2 :
                         print "\n"
                         print "----------------------------------------------------------------"
                         print "Success. Only one agent installed on:",env.host_string,": agent "
                         print "----------------------------------------------------------------"
                         print "\n"
-                        d = run('ls -l /local/mnt/hyperic/ | grep -v agent$',quiet=True)
+                        d = run("ls -al /local/mnt/hyperic/ | grep -v agent$ | awk -F' ' '{print$9}'",quiet=True)
                         print "------------------------------------------------------------------"
                         print "Deleting any unecessary Agent directories in /local/mnt/hyperic/ : \n", d
                         print "------------------------------------------------------------------"
                         time.sleep(3)
                         sudo('find /local/mnt/hyperic/* -maxdepth 0 -type d ! -name "agent" -exec rm -rf {} \;',quiet=True)
-                        sys.exit(0)
-                elif int(a) >= 3 and int(b) >= 3:
+def test_3():
+        with settings(warn_only=True):
+                a = run('ps -ef | grep -c "hyperic/agent/"',quiet=True)
+                b = run('ps -ef | grep -c "hyperic/agent-switch/"',quiet=True)
+                if int(a) >= 3 and int(b) >= 3:
                         print "\n"
                         print "------------------------------------------------"
                         print "There are 2 agents runing on this host ........."
@@ -69,24 +79,23 @@ def test():
                         print "------------------------------------------------"
                         print "\n"
                         time.sleep(3)
-                        execute(removal)
-                        sys.exit(0)
+                        sudo('/local/mnt/hyperic/agent/bin/hq-agent.sh stop',quiet=True)
+                        sudo('rm -rf /local/mnt/hyperic/agent',quiet=True)
+                        print "\n"
+                        print "-----------------------------------------"
+                        print "2nd Agent removed from :", env.host_string
+                        print "-----------------------------------------"
+                        print "\n"
+                        d = run("ls -al /local/mnt/hyperic/ | grep -v agent-switch$ | awk -F' ' '{print$9}'",quiet=True)
+                        print "\n"
+                        print "------------------------------------------------------------------"
+                        print "Deleting any unecessary Agent directories in /local/mnt/hyperic/: \n", d
+                        print "------------------------------------------------------------------"
+                        sudo('find /local/mnt/hyperic/* -maxdepth 0 -type d ! -name "agent-switch" -exec rm -rf {} \;',quiet=True)
                 elif int(a) <= 2 and int(b) <= 2 and not confirm("No Agent installed. Continue anyway?"):
                         abort("Aborting at user request.")
-def removal():
-        sudo('/local/mnt/hyperic/agent/bin/hq-agent.sh stop',quiet=True)
-        sudo('rm -rf /local/mnt/hyperic/agent',quiet=True)
-        print "\n"
-        print "-----------------------------------------"
-        print "2nd Agent removed from :", env.host_string
-        print "-----------------------------------------"
-        print "\n"
-                        print "\n"
-        d = run('ls /local/mnt/hyperic/ | grep -v agent-switch$',quiet=True)
-        print "Deleting any unecessary Agent directories in /local/mnt/hyperic/: \n", d
-        sudo('find /local/mnt/hyperic/* -maxdepth 0 -type d ! -name "agent-switch" -exec rm -rf {} \;',quiet=True)
 
 # call the function(sub-task)here in order to execute it
 def task():
     execute(hosts)
-    execute(test)
+    execute(test_1)
