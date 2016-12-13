@@ -1,5 +1,7 @@
-# Script that makes sure SPS Tomcat has stopped
 #!/bin/bash
+#####################################################################
+# Script that makes sure SPS Tomcat Ports have been shutdown porperly
+#####################################################################
 
 x=1
 while [ `netstat -tulpn | grep -c '8100\|8200\|8300'` -ge 1 ] && [ $x -le 100 ]; do
