@@ -13,7 +13,7 @@ while [ `netstat -tulpn | grep -c '8100\|8200\|8300'` -ge 1 ] && [ $x -le 100 ];
            echo "Loop detected. Processes have not shutdown after 5 mins. Aborting Script"
            exit 1
              else
-              continue
+              continue  #Starts loop again
           fi
         fi
         logger "SPS has been successfully stopped."
